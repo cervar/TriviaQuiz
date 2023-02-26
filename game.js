@@ -21,7 +21,7 @@ fetch(
     .then((loadedQuestions) => {
         questions = loadedQuestions.results.map((loadedQuestion) => {
             const formattedQuestion = {
-                question: loadedQuestion.question,
+                question: loadedQuestion.question.replace(/'/g, '&#039;').replace(/&quot;/g, '"'),
             };
 
             const answerChoices = [...loadedQuestion.incorrect_answers];
@@ -33,7 +33,7 @@ fetch(
             );
 
             answerChoices.forEach((choice, index) => {
-                formattedQuestion['choice' + (index + 1)] = choice;
+                formattedQuestion['choice' + (index + 1)] = choice.replace(/'/g, '&#039;').replace(/&quot;/g, '"');
             });
 
             return formattedQuestion;
@@ -71,11 +71,11 @@ getNewQuestion = () => {
 
     const questionIndex = Math.floor(Math.random() * availableQuesions.length);
     currentQuestion = availableQuesions[questionIndex];
-    question.innerText = currentQuestion.question;
+    question.innerText = decodeURIComponent(currentQuestion.question.replace(/&#039;/g, "'"));
 
     choices.forEach((choice) => {
         const number = choice.dataset['number'];
-        choice.innerText = currentQuestion['choice' + number];
+        choice.innerText = decodeURIComponent(currentQuestion['choice' + number].replace(/&#039;/g, "'").replace(/&quot;/g, '"'));
     });
 
     availableQuesions.splice(questionIndex, 1);
@@ -102,7 +102,8 @@ choices.forEach((choice) => {
         setTimeout(() => {
             selectedChoice.parentElement.classList.remove(classToApply);
             getNewQuestion();
-        }, 1000);
+        }, 1000
+);
     });
 });
 
